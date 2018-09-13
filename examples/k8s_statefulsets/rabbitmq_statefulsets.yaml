@@ -76,6 +76,8 @@ spec:
         volumeMounts:
           - name: config-volume
             mountPath: /etc/rabbitmq
+          - name: mqclaim
+            mountPath: /var/lib/rabbitmq
         ports:
           - name: http
             protocol: TCP
@@ -119,3 +121,19 @@ spec:
               path: rabbitmq.conf
             - key: enabled_plugins
               path: enabled_plugins
+              #- name: nfs-pvc
+              #- persistentVolumeClaim:
+              #-   claimName: test-claim
+  volumeClaimTemplates:
+    - metadata:
+        name: mqclaim
+        # namespace: test-rabbitmq
+        annotations:
+          volume.beta.kubernetes.io/storage-class: "managed-nfs-storage"
+      spec:
+        accessModes:
+          - ReadWriteMany
+        storageClassName: "managed-nfs-storage"
+        resources:
+          requests:
+            storage: 1Gi
